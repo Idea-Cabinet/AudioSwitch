@@ -1,0 +1,11 @@
+/build/
+/audio-switch.ini
+/AudioSwitch.ico
+*.log
+ui-state.ini
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.user
+.vs/
