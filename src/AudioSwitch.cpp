@@ -4,10 +4,16 @@
 #include <shellapi.h>
 #include <mmdeviceapi.h>
 #include <strsafe.h>
+#include "ChordState.h"
 
 static wchar_t ini[MAX_PATH],logpath[MAX_PATH];
 static wchar_t ids[2][512], names[2][128];
 static UINT key=VK_F13, mods=MOD_NOREPEAT, taskbarCreated;
+static UINT chordKey=0;
+static HHOOK keyboardHook=nullptr;
+static HWND listenerWindow=nullptr;
+static ChordState chord;
+static LRESULT CALLBACK KeyboardProc(int code,WPARAM w,LPARAM l){if(code==HC_ACTION){auto event=(KBDLLHOOKSTRUCT*)l;bool down=w==WM_KEYDOWN||w==WM_SYSKEYDOWN;bool up=w==WM_KEYUP||w==WM_SYSKEYUP;if(down||up){auto result=chord.Process(event->vkCode==chordKey,event->vkCode==key,down);if(result.trigger)PostMessageW(listenerWindow,WM_APP+3,0,0);if(result.suppress)return 1;}}return CallNextHookEx(keyboardHook,code,w,l);}
 static NOTIFYICONDATAW icon={sizeof(icon)};
 static const wchar_t* cls=L"AudioSwitchNativeWindow";
 static wchar_t exePath[MAX_PATH],iconPath[MAX_PATH];
@@ -43,9 +49,10 @@ static bool SetTray(HWND h,bool visible){if(!WritePrivateProfileStringW(L"UI",L"
 static LRESULT CALLBACK WindowProc(HWND h,UINT msg,WPARAM w,LPARAM l){if(msg==taskbarCreated){trayVisible=false;AddTray(h);return 0;}switch(msg){
  case WM_APP+2:if(w==1)return SetTray(h,true);if(w==2)return SetTray(h,false);if(w==3){DestroyWindow(h);return 1;}if(w==4){SaveState();return 1;}if(w==5)return SetStartup(true);if(w==6)return SetStartup(false);return 0;
  case WM_HOTKEY:if(w==1)Toggle();return 0;
+ case WM_APP+3:Toggle();return 0;
  case WM_APP+1:if(l==WM_LBUTTONDBLCLK)Toggle();else if(l==WM_RBUTTONUP||l==WM_CONTEXTMENU){POINT p;GetCursorPos(&p);HMENU menu=CreatePopupMenu();AppendMenuW(menu,MF_STRING,1,L"切换：Dell ↔ 耳机");AppendMenuW(menu,MF_STRING|(StartupEnabled()?MF_CHECKED:0),3,L"开机自启（当前用户登录时）");AppendMenuW(menu,MF_STRING,4,L"隐藏托盘图标（快捷键继续工作）");AppendMenuW(menu,MF_SEPARATOR,0,nullptr);AppendMenuW(menu,MF_STRING,2,L"退出程序（停止快捷键）");SetForegroundWindow(h);int cmd=TrackPopupMenu(menu,TPM_RETURNCMD|TPM_RIGHTBUTTON,p.x,p.y,0,h,nullptr);DestroyMenu(menu);PostMessageW(h,WM_NULL,0,0);if(cmd==1)Toggle();if(cmd==2)DestroyWindow(h);if(cmd==3&&!SetStartup(!StartupEnabled()))Notify(L"无法更新开机自启设置。",true);if(cmd==4&&!SetTray(h,false))Notify(L"无法保存托盘设置。",true);}return 0;
  case WM_CLOSE:DestroyWindow(h);return 0;
- case WM_DESTROY:UnregisterHotKey(h,1);Shell_NotifyIconW(NIM_DELETE,&icon);trayVisible=false;if(ownIcon)DestroyIcon(icon.hIcon);icon.hIcon=nullptr;PostQuitMessage(0);return 0;
+ case WM_DESTROY:if(keyboardHook){UnhookWindowsHookEx(keyboardHook);keyboardHook=nullptr;}UnregisterHotKey(h,1);Shell_NotifyIconW(NIM_DELETE,&icon);trayVisible=false;if(ownIcon)DestroyIcon(icon.hIcon);icon.hIcon=nullptr;PostQuitMessage(0);return 0;
  }return DefWindowProcW(h,msg,w,l);}
 int WINAPI wWinMain(HINSTANCE instance,HINSTANCE,LPWSTR,int){
  wchar_t base[MAX_PATH];GetModuleFileNameW(nullptr,exePath,MAX_PATH);StringCchCopyW(base,MAX_PATH,exePath);wchar_t* slash=wcsrchr(base,L'\\');if(!slash)return 1;slash[1]=0;StringCchPrintfW(ini,MAX_PATH,L"%saudio-switch.ini",base);StringCchPrintfW(logpath,MAX_PATH,L"%saudio-native.log",base);StringCchPrintfW(iconPath,MAX_PATH,L"%sAudioSwitch.ico",base);
@@ -54,11 +61,13 @@ int WINAPI wWinMain(HINSTANCE instance,HINSTANCE,LPWSTR,int){
  showTray=GetPrivateProfileIntW(L"UI",L"ShowTray",1,ini)!=0;if(!background&&!test&&!single){showTray=true;WritePrivateProfileStringW(L"UI",L"ShowTray",L"1",ini);}
  GetPrivateProfileStringW(L"Devices",L"DellId",L"",ids[0],512,ini);GetPrivateProfileStringW(L"Devices",L"HeadphonesId",L"",ids[1],512,ini);StringCchCopyW(names[0],128,L"DELL S2725QS");StringCchCopyW(names[1],128,L"耳机（High Definition Audio Device）");
  key=GetPrivateProfileIntW(L"Hotkey",L"VirtualKey",VK_F13,ini);mods|=GetPrivateProfileIntW(L"Hotkey",L"Modifiers",0,ini);
+ chordKey=GetPrivateProfileIntW(L"Hotkey",L"ChordKey",0,ini);if(chordKey&&(chordKey>254||chordKey==key||mods!=MOD_NOREPEAT)){MessageBoxW(nullptr,L"双键组合配置无效",L"音频切换",MB_ICONERROR);return 1;}
  if(!ids[0][0]||!ids[1][0]||!wcscmp(ids[0],ids[1])||key<1||key>254||(mods&~(MOD_NOREPEAT|MOD_ALT|MOD_CONTROL|MOD_SHIFT))){MessageBoxW(nullptr,L"audio-switch.ini 配置无效",L"音频切换",MB_ICONERROR);return 1;}
  HRESULT hr=CoInitializeEx(nullptr,COINIT_APARTMENTTHREADED);if(FAILED(hr))return 1;
  if(test||single){int selected=0;hr=RunAudio(test,&selected);Log(SUCCEEDED(hr)?L"PASS":L"FAIL");CoUninitialize();return FAILED(hr)?1:0;}
  HANDLE mutex=CreateMutexW(nullptr,TRUE,L"Local\\DellHeadphonesAudioSwitch");if(!mutex||GetLastError()==ERROR_ALREADY_EXISTS){if(!background){HWND running=FindWindowW(cls,nullptr);if(running){DWORD_PTR result;SendMessageTimeoutW(running,WM_APP+2,1,0,SMTO_ABORTIFHUNG,3000,&result);}}if(mutex)CloseHandle(mutex);CoUninitialize();return 0;}
  taskbarCreated=RegisterWindowMessageW(L"TaskbarCreated");WNDCLASSW wc={};wc.lpfnWndProc=WindowProc;wc.hInstance=instance;wc.lpszClassName=cls;RegisterClassW(&wc);HWND h=CreateWindowExW(WS_EX_TOOLWINDOW,cls,L"AudioSwitch",WS_POPUP,0,0,0,0,nullptr,nullptr,instance,nullptr);
- if(!h||!RegisterHotKey(h,1,mods,key)){MessageBoxW(nullptr,L"无法注册快捷键，可能被其他程序占用。",L"音频切换",MB_ICONERROR);if(h)DestroyWindow(h);CloseHandle(mutex);CoUninitialize();return 1;}
+ listenerWindow=h;bool registered=false;if(h){if(chordKey){keyboardHook=SetWindowsHookExW(WH_KEYBOARD_LL,KeyboardProc,instance,0);registered=keyboardHook!=nullptr;}else registered=RegisterHotKey(h,1,mods,key)!=FALSE;}
+ if(!registered){MessageBoxW(nullptr,L"无法注册快捷键，可能被其他程序占用。",L"音频切换",MB_ICONERROR);if(h)DestroyWindow(h);CloseHandle(mutex);CoUninitialize();return 1;}
  AddTray(h);Log(L"Native listener ready");MSG msg;while(GetMessageW(&msg,nullptr,0,0)>0){TranslateMessage(&msg);DispatchMessageW(&msg);}CloseHandle(mutex);CoUninitialize();return 0;
 }
