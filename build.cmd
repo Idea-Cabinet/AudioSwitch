@@ -14,7 +14,7 @@ if not defined AUDIO_VSROOT (
 call "%AUDIO_VSROOT%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64 >nul
 if errorlevel 1 exit /b 1
 if not exist build mkdir build
-cl /nologo /O1 /MT /W4 /utf-8 /EHsc /DWIN32_LEAN_AND_MEAN src\AudioSwitch.cpp /Fo:build\AudioSwitch.obj /Fe:build\AudioSwitch.exe /link /SUBSYSTEM:WINDOWS ole32.lib user32.lib shell32.lib uuid.lib advapi32.lib
+cl /nologo /O1 /MT /W4 /utf-8 /EHsc /DWIN32_LEAN_AND_MEAN src\AudioSwitch.cpp /Fo:build\AudioSwitch.obj /Fe:build\AudioSwitch.exe /link /SUBSYSTEM:WINDOWS ole32.lib user32.lib shell32.lib uuid.lib advapi32.lib propsys.lib gdi32.lib comctl32.lib
 if errorlevel 1 exit /b 1
 echo Built build\AudioSwitch.exe
 endlocal

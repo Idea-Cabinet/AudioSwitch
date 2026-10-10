@@ -11,6 +11,8 @@
 ## 功能
 
 - 默认按 **F13** 切换两个配置的播放端点。
+- **动态设备识别**：每次切换时基于设备的友好名称（FriendlyName）与硬件描述（DeviceDesc）动态解析系统最新的活动端点 ID。即使因电脑重启、休眠或插拔导致 Windows 重新分配端点 GUID，依然自动无缝识别。
+- **图形配置界面**：托盘右键可一键打开“音频设备配置”窗口，可视化下拉选择目标设备、查看硬件描述与驱动接口，并提供即时试听切换。
 - 托盘双击切换；右键可隐藏图标、开关自启或退出。
 - 隐藏图标后快捷键继续工作；再次双击 EXE 可恢复图标。
 - 自启仅作用于当前用户登录，保留托盘隐藏偏好。
@@ -31,26 +33,26 @@ build.cmd
 
 ## 配置设备
 
-将 `audio-switch.example.ini` 复制到 EXE 同目录，命名为 `audio-switch.ini`，填写两个真实播放端点 ID。示例中的占位符不可直接使用。
+**推荐方式：图形界面配置**
+右键点击系统托盘图标，选择 **“音频设备配置(&S)...”**（或启动时执行 `AudioSwitch.exe --settings`）：
+- 界面会自动枚举当前系统所有处于活动状态的播放设备；
+- 下拉选择“设备 1”和“设备 2”，可查看详细硬件描述与驱动接口类型；
+- 可直接点击“试切此设备”试听效果；
+- 点击“保存并生效”后即刻更新配置，程序会自动记录友好名称与硬件描述并持久化到 `audio-switch.ini`。
 
-以下 PowerShell 命令只读列出注册表中处于活动状态的播放设备及 ID：
+**手动配置文件配置（可选）**
+将 `audio-switch.example.ini` 复制为 `audio-switch.ini`：
+```ini
+[Devices]
+Device1Friendly=DELL S2725QS (NVIDIA High Definition Audio)
+Device1Desc=DELL S2725QS
+Device1Interface=NVIDIA High Definition Audio
 
-```powershell
-Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' |
-    ForEach-Object {
-        $device = Get-ItemProperty $_.PSPath
-        $properties = Get-ItemProperty ($_.PSPath + '\Properties')
-        if ($device.DeviceState -eq 1) {
-            [pscustomobject]@{
-                Name = $properties.'{a45c254e-df1c-4efd-8020-67d146a850e0},2'
-                Interface = $properties.'{b3f8fa53-0004-438e-9003-51a46e139bfc},6'
-                EndpointId = '{0.0.0.00000000}.' + $_.PSChildName
-            }
-        }
-    } | Format-List
+Device2Friendly=耳机 (High Definition Audio Device)
+Device2Desc=耳机
+Device2Interface=High Definition Audio Device
 ```
-
-`DellId` 和 `HeadphonesId` 实际上是两个目标端点槽位。可填写其他播放设备，但当前托盘与提示文字仍按 Dell / 耳机命名。重装驱动或变更端口后，端点 ID 可能需要更新。
+程序在每次切换时都会动态遍历当前系统活跃设备并打分匹配，因此开关机、插拔显示器或显卡驱动重载后均无需重新配置。旧版本的 `DellId` 和 `HeadphonesId` 字段同样作为向后兼容 fallback 保留。
 
 ## 键盘与托盘
 
@@ -80,6 +82,7 @@ Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\R
 | `--background` | 启动监听，遵循隐藏偏好 |
 | `--toggle` | 切换一次后退出 |
 | `--show-tray` / `--hide-tray` | 显示 / 隐藏托盘 |
+| `--settings` / `--config` | 打开音频设备与切换图形配置界面 |
 | `--exit` | 退出运行实例 |
 | `--autostart-on` / `--autostart-off` | 开启 / 关闭当前用户自启 |
 | `--status` | 将运行实例状态写入 `ui-state.ini` |
