@@ -131,10 +131,11 @@ enum SettingsControlId {
     IDC_LBL_HK_HINT = 125,
 
     // Bottom Controls
-    IDC_LBL_STATUS = 126,
-    IDC_BTN_REFRESH = 127,
-    IDC_BTN_SAVE = 128,
-    IDC_BTN_CANCEL = 129
+    IDC_CHK_NOTIFY = 126,
+    IDC_LBL_STATUS = 127,
+    IDC_BTN_REFRESH = 128,
+    IDC_BTN_SAVE = 129,
+    IDC_BTN_CANCEL = 130
 };
 
 enum RecordingTarget {
@@ -156,6 +157,7 @@ static NOTIFYICONDATAW icon = {sizeof(icon)};
 static const wchar_t* cls = L"AudioSwitchNativeWindow";
 static const wchar_t* settingsCls = L"AudioSwitchSettingsWindow";
 static bool showTray = true, trayVisible = false, ownIcon = false;
+static bool showNotification = true;
 static ChordState chord;
 
 static const wchar_t* startupKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
@@ -245,6 +247,7 @@ static void SaveState() {
     WritePrivateProfileStringW(L"State", L"Running", L"1", path);
     WritePrivateProfileStringW(L"State", L"TrayVisible", trayVisible ? L"1" : L"0", path);
     WritePrivateProfileStringW(L"State", L"ShowTrayPreference", showTray ? L"1" : L"0", path);
+    WritePrivateProfileStringW(L"State", L"ShowNotification", showNotification ? L"1" : L"0", path);
     WritePrivateProfileStringW(L"State", L"AutoStart", StartupEnabled() ? L"1" : L"0", path);
 }
 
@@ -449,6 +452,7 @@ static void LoadConfig() {
     mods = MOD_NOREPEAT | GetPrivateProfileIntW(L"Hotkey", L"Modifiers", 0, ini);
     chordKey = GetPrivateProfileIntW(L"Hotkey", L"ChordKey", 0, ini);
     showTray = GetPrivateProfileIntW(L"UI", L"ShowTray", 1, ini) != 0;
+    showNotification = GetPrivateProfileIntW(L"UI", L"ShowNotification", 1, ini) != 0;
 }
 
 static void SaveConfig() {
@@ -472,6 +476,9 @@ static void SaveConfig() {
 
     StringCchPrintfW(numBuf, ARRAYSIZE(numBuf), L"%u", chordKey);
     WritePrivateProfileStringW(L"Hotkey", L"ChordKey", numBuf, ini);
+
+    WritePrivateProfileStringW(L"UI", L"ShowTray", showTray ? L"1" : L"0", ini);
+    WritePrivateProfileStringW(L"UI", L"ShowNotification", showNotification ? L"1" : L"0", ini);
 }
 
 static HRESULT Default(IMMDeviceEnumerator* e, ERole role, LPWSTR* id) {
@@ -622,7 +629,7 @@ static HRESULT RunAudio(bool test, int* selected, int forceTarget = -1) {
 }
 
 static void Notify(const wchar_t* text, bool error) {
-    if (!trayVisible) return;
+    if (!trayVisible || !showNotification) return;
     StringCchCopyW(icon.szInfoTitle, 64, error ? L"音频切换失败" : L"声音输出已切换");
     StringCchCopyW(icon.szInfo, 256, text);
     icon.uFlags = NIF_INFO;
@@ -1056,6 +1063,7 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
             key = newKey;
             mods = newMods;
             chordKey = newChordKey;
+            showNotification = (IsDlgButtonChecked(h, IDC_CHK_NOTIFY) == BST_CHECKED);
 
             SaveConfig();
 
@@ -1125,7 +1133,7 @@ static void ShowSettingsDialog(HWND parent) {
     auto Scale = [dpi](int v) -> int { return MulDiv(v, dpi, 96); };
 
     int dlgW = Scale(580);
-    int dlgH = Scale(460);
+    int dlgH = Scale(475);
     int screenW = GetSystemMetrics(SM_CXSCREEN);
     int screenH = GetSystemMetrics(SM_CYSCREEN);
     int posX = (screenW - dlgW) / 2;
@@ -1305,29 +1313,36 @@ static void ShowSettingsDialog(HWND parent) {
     // Hint text
     CreateWindowExW(0, L"STATIC", L"",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        Scale(20), Scale(300), Scale(535), Scale(18),
+        Scale(20), Scale(298), Scale(535), Scale(18),
         settingsWindow, (HMENU)IDC_LBL_HK_HINT, GetModuleHandleW(nullptr), nullptr);
+
+    // Notification Checkbox
+    HWND hChkNotify = CreateWindowExW(0, L"BUTTON", L"切换音频时弹出系统通知气泡 (显示切换后的输出设备)",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+        Scale(20), Scale(320), Scale(450), Scale(20),
+        settingsWindow, (HMENU)IDC_CHK_NOTIFY, GetModuleHandleW(nullptr), nullptr);
+    if (showNotification) SendMessageW(hChkNotify, BM_SETCHECK, BST_CHECKED, 0);
 
     // Status text
     CreateWindowExW(0, L"STATIC", L"就绪",
         WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP,
-        Scale(20), Scale(324), Scale(535), Scale(18),
+        Scale(20), Scale(344), Scale(535), Scale(18),
         settingsWindow, (HMENU)IDC_LBL_STATUS, GetModuleHandleW(nullptr), nullptr);
 
     // Bottom buttons
     CreateWindowExW(0, L"BUTTON", L"🔄 刷新设备列表",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(20), Scale(355), Scale(130), Scale(30),
+        Scale(20), Scale(370), Scale(130), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_REFRESH, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"💾 保存并生效",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-        Scale(305), Scale(355), Scale(125), Scale(30),
+        Scale(305), Scale(370), Scale(125), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_SAVE, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"取消",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(445), Scale(355), Scale(110), Scale(30),
+        Scale(445), Scale(370), Scale(110), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_CANCEL, GetModuleHandleW(nullptr), nullptr);
 
     if (s_dlgFont) {
