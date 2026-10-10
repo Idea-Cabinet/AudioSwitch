@@ -31,6 +31,76 @@ struct TargetDeviceConfig {
     wchar_t fallbackId[512];
 };
 
+struct KeyPreset {
+    const wchar_t* name;
+    UINT vk;
+};
+
+static const KeyPreset k_mainKeyPresets[] = {
+    { L"F13 (键码 124 - 默认推荐)", VK_F13 },
+    { L"F14 (键码 125)", VK_F14 },
+    { L"F15 (键码 126)", VK_F15 },
+    { L"F16 (键码 127)", VK_F16 },
+    { L"F17 (键码 128)", VK_F17 },
+    { L"F18 (键码 129)", VK_F18 },
+    { L"F19 (键码 130)", VK_F19 },
+    { L"F20 (键码 131)", VK_F20 },
+    { L"F21 (键码 132)", VK_F21 },
+    { L"F22 (键码 133)", VK_F22 },
+    { L"F23 (键码 134)", VK_F23 },
+    { L"F24 (键码 135)", VK_F24 },
+    { L"Page Up (PgUp - 键码 33)", VK_PRIOR },
+    { L"Page Down (PgDn - 键码 34)", VK_NEXT },
+    { L"End (键码 35)", VK_END },
+    { L"Home (键码 36)", VK_HOME },
+    { L"Insert (键码 45)", VK_INSERT },
+    { L"Delete (键码 46)", VK_DELETE },
+    { L"Pause / Break (键码 19)", VK_PAUSE },
+    { L"Scroll Lock (键码 145)", VK_SCROLL },
+    { L"F1 (键码 112)", VK_F1 },
+    { L"F2 (键码 113)", VK_F2 },
+    { L"F3 (键码 114)", VK_F3 },
+    { L"F4 (键码 115)", VK_F4 },
+    { L"F5 (键码 116)", VK_F5 },
+    { L"F6 (键码 117)", VK_F6 },
+    { L"F7 (键码 118)", VK_F7 },
+    { L"F8 (键码 119)", VK_F8 },
+    { L"F9 (键码 120)", VK_F9 },
+    { L"F10 (键码 121)", VK_F10 },
+    { L"F11 (键码 122)", VK_F11 },
+    { L"F12 (键码 123)", VK_F12 },
+    { L"A", 'A' }, { L"B", 'B' }, { L"C", 'C' }, { L"D", 'D' },
+    { L"E", 'E' }, { L"F", 'F' }, { L"G", 'G' }, { L"H", 'H' },
+    { L"I", 'I' }, { L"J", 'J' }, { L"K", 'K' }, { L"L", 'L' },
+    { L"M", 'M' }, { L"N", 'N' }, { L"O", 'O' }, { L"P", 'P' },
+    { L"Q", 'Q' }, { L"R", 'R' }, { L"S", 'S' }, { L"T", 'T' },
+    { L"U", 'U' }, { L"V", 'V' }, { L"W", 'W' }, { L"X", 'X' },
+    { L"Y", 'Y' }, { L"Z", 'Z' },
+    { L"1", '1' }, { L"2", '2' }, { L"3", '3' }, { L"4", '4' },
+    { L"5", '5' }, { L"6", '6' }, { L"7", '7' }, { L"8", '8' },
+    { L"9", '9' }, { L"0", '0' },
+    { L"` (~)", VK_OEM_3 },
+    { L"- (_)", VK_OEM_MINUS },
+    { L"= (+)", VK_OEM_PLUS },
+    { L"[", VK_OEM_4 }, { L"]", VK_OEM_6 }, { L"\\", VK_OEM_5 },
+    { L";", VK_OEM_1 }, { L"'", VK_OEM_7 },
+    { L",", VK_OEM_COMMA }, { L".", VK_OEM_PERIOD }, { L"/", VK_OEM_2 }
+};
+
+static const KeyPreset k_chordKeyPresets[] = {
+    { L"End (键码 35 - 默认推荐)", VK_END },
+    { L"Home (键码 36)", VK_HOME },
+    { L"Page Up (PgUp - 键码 33)", VK_PRIOR },
+    { L"Page Down (PgDn - 键码 34)", VK_NEXT },
+    { L"Insert (键码 45)", VK_INSERT },
+    { L"Delete (键码 46)", VK_DELETE },
+    { L"Scroll Lock (键码 145)", VK_SCROLL },
+    { L"Pause (键码 19)", VK_PAUSE },
+    { L"F13 (键码 124)", VK_F13 },
+    { L"F14 (键码 125)", VK_F14 },
+    { L"F15 (键码 126)", VK_F15 }
+};
+
 enum SettingsControlId {
     IDC_LBL_BANNER = 101,
     IDC_LBL_DEV1 = 102,
@@ -41,11 +111,36 @@ enum SettingsControlId {
     IDC_CB_DEV2 = 107,
     IDC_BTN_TEST2 = 108,
     IDC_INFO_DEV2 = 109,
-    IDC_LBL_HOTKEY = 110,
-    IDC_LBL_STATUS = 111,
-    IDC_BTN_REFRESH = 112,
-    IDC_BTN_SAVE = 113,
-    IDC_BTN_CANCEL = 114
+
+    // Hotkey Controls
+    IDC_LBL_HK_TITLE = 110,
+    IDC_LBL_HK_MODE = 111,
+    IDC_CB_HK_MODE = 112,
+    IDC_LBL_MODIFIERS = 113,
+    IDC_CHK_CTRL = 114,
+    IDC_CHK_ALT = 115,
+    IDC_CHK_SHIFT = 116,
+    IDC_LBL_CHORD_KEY = 117,
+    IDC_CB_CHORD_PRESET = 118,
+    IDC_BTN_REC_CHORD = 119,
+    IDC_LBL_CUR_CHORD = 120,
+    IDC_LBL_MAIN_KEY = 121,
+    IDC_CB_KEY_PRESET = 122,
+    IDC_BTN_REC_KEY = 123,
+    IDC_LBL_CUR_KEY = 124,
+    IDC_LBL_HK_HINT = 125,
+
+    // Bottom Controls
+    IDC_LBL_STATUS = 126,
+    IDC_BTN_REFRESH = 127,
+    IDC_BTN_SAVE = 128,
+    IDC_BTN_CANCEL = 129
+};
+
+enum RecordingTarget {
+    REC_NONE = 0,
+    REC_MAIN_KEY,
+    REC_CHORD_KEY
 };
 
 static wchar_t ini[MAX_PATH], logpath[MAX_PATH], iconPath[MAX_PATH], exePath[MAX_PATH];
@@ -69,6 +164,15 @@ static const wchar_t* startupName = L"AudioSwitch-DellHeadphones";
 static std::vector<AudioDeviceInfo> s_dlgDevices;
 static HFONT s_dlgFont = nullptr;
 
+static UINT s_dlgKey = VK_F13;
+static UINT s_dlgMods = MOD_NOREPEAT;
+static UINT s_dlgChordKey = 0;
+static int s_dlgMode = 0;
+
+static RecordingTarget s_recTarget = REC_NONE;
+static HHOOK s_recHook = nullptr;
+static HWND s_recDialog = nullptr;
+
 static bool EqualsNoCase(const wchar_t* a, const wchar_t* b) {
     if (!a || !b) return false;
     return _wcsicmp(a, b) == 0;
@@ -80,6 +184,30 @@ static bool ContainsNoCase(const wchar_t* haystack, const wchar_t* needle) {
     std::transform(h.begin(), h.end(), h.begin(), ::towlower);
     std::transform(n.begin(), n.end(), n.begin(), ::towlower);
     return h.find(n) != std::wstring::npos;
+}
+
+static std::wstring FormatKeyDisplay(UINT vk) {
+    if (vk == 0) return L"未设置";
+    if (vk >= VK_F1 && vk <= VK_F24) {
+        return L"F" + std::to_wstring(vk - VK_F1 + 1) + L" (" + std::to_wstring(vk) + L")";
+    }
+    switch (vk) {
+    case VK_PRIOR: return L"PgUp (33)";
+    case VK_NEXT:  return L"PgDn (34)";
+    case VK_END:   return L"End (35)";
+    case VK_HOME:  return L"Home (36)";
+    case VK_INSERT:return L"Insert (45)";
+    case VK_DELETE:return L"Delete (46)";
+    case VK_PAUSE: return L"Pause (19)";
+    case VK_SCROLL:return L"ScrollLock (145)";
+    case VK_ESCAPE:return L"Esc (27)";
+    case VK_SPACE: return L"Space (32)";
+    case VK_TAB:   return L"Tab (9)";
+    }
+    if ((vk >= 'A' && vk <= 'Z') || (vk >= '0' && vk <= '9')) {
+        return std::wstring(1, (wchar_t)vk) + L" (" + std::to_wstring(vk) + L")";
+    }
+    return L"VK: " + std::to_wstring(vk);
 }
 
 static void StartupCommand(wchar_t* out, size_t length) {
@@ -334,6 +462,16 @@ static void SaveConfig() {
     WritePrivateProfileStringW(L"Devices", L"Device2Desc", targets[1].desc, ini);
     WritePrivateProfileStringW(L"Devices", L"Device2Interface", targets[1].interfaceName, ini);
     if (currentActive[1].id[0]) WritePrivateProfileStringW(L"Devices", L"HeadphonesId", currentActive[1].id, ini);
+
+    wchar_t numBuf[32];
+    StringCchPrintfW(numBuf, ARRAYSIZE(numBuf), L"%u", key);
+    WritePrivateProfileStringW(L"Hotkey", L"VirtualKey", numBuf, ini);
+
+    StringCchPrintfW(numBuf, ARRAYSIZE(numBuf), L"%u", (mods & ~MOD_NOREPEAT));
+    WritePrivateProfileStringW(L"Hotkey", L"Modifiers", numBuf, ini);
+
+    StringCchPrintfW(numBuf, ARRAYSIZE(numBuf), L"%u", chordKey);
+    WritePrivateProfileStringW(L"Hotkey", L"ChordKey", numBuf, ini);
 }
 
 static HRESULT Default(IMMDeviceEnumerator* e, ERole role, LPWSTR* id) {
@@ -502,7 +640,7 @@ static void Toggle() {
     } else {
         wchar_t text[256];
         if (hr == HRESULT_FROM_WIN32(ERROR_DEVICE_NOT_CONNECTED)) {
-            StringCchPrintfW(text, ARRAYSIZE(text), L"目标设备未连接或未就绪。请右键托盘打开【设备配置】检查。");
+            StringCchPrintfW(text, ARRAYSIZE(text), L"目标设备未连接或未就绪。请右键托盘打开【快捷键与设备设置】检查。");
         } else {
             StringCchPrintfW(text, ARRAYSIZE(text), L"切换失败（错误码 0x%08X）。", (unsigned)hr);
         }
@@ -549,6 +687,136 @@ static LRESULT CALLBACK KeyboardProc(int code, WPARAM w, LPARAM l) {
         }
     }
     return CallNextHookEx(keyboardHook, code, w, l);
+}
+
+static bool ApplyHotkey(HWND hListener) {
+    if (!hListener || !IsWindow(hListener)) return false;
+    if (keyboardHook) {
+        UnhookWindowsHookEx(keyboardHook);
+        keyboardHook = nullptr;
+    }
+    UnregisterHotKey(hListener, 1);
+    chord = ChordState{};
+
+    if (chordKey) {
+        keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, KeyboardProc, GetModuleHandleW(nullptr), 0);
+        return keyboardHook != nullptr;
+    } else {
+        return RegisterHotKey(hListener, 1, mods, key) != FALSE;
+    }
+}
+
+static LRESULT CALLBACK RecordingHookProc(int code, WPARAM w, LPARAM l) {
+    if (code == HC_ACTION && (w == WM_KEYDOWN || w == WM_SYSKEYDOWN)) {
+        auto event = (KBDLLHOOKSTRUCT*)l;
+        UINT vk = event->vkCode;
+
+        if (vk == VK_ESCAPE) {
+            PostMessageW(s_recDialog, WM_APP + 11, 0, 0);
+            if (s_recHook) {
+                UnhookWindowsHookEx(s_recHook);
+                s_recHook = nullptr;
+            }
+            s_recTarget = REC_NONE;
+            return 1;
+        }
+
+        if (s_recTarget != REC_NONE && s_recDialog && IsWindow(s_recDialog)) {
+            if (vk == VK_LSHIFT || vk == VK_RSHIFT || vk == VK_SHIFT) {
+                if (s_recTarget == REC_MAIN_KEY) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_SHIFT, BM_SETCHECK, BST_CHECKED, 0);
+                }
+                return 1;
+            }
+            if (vk == VK_LCONTROL || vk == VK_RCONTROL || vk == VK_CONTROL) {
+                if (s_recTarget == REC_MAIN_KEY) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_CTRL, BM_SETCHECK, BST_CHECKED, 0);
+                }
+                return 1;
+            }
+            if (vk == VK_LMENU || vk == VK_RMENU || vk == VK_MENU) {
+                if (s_recTarget == REC_MAIN_KEY) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_ALT, BM_SETCHECK, BST_CHECKED, 0);
+                }
+                return 1;
+            }
+
+            if (s_recTarget == REC_MAIN_KEY) {
+                if ((GetKeyState(VK_CONTROL) & 0x8000) != 0) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_CTRL, BM_SETCHECK, BST_CHECKED, 0);
+                }
+                if ((GetKeyState(VK_MENU) & 0x8000) != 0) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_ALT, BM_SETCHECK, BST_CHECKED, 0);
+                }
+                if ((GetKeyState(VK_SHIFT) & 0x8000) != 0) {
+                    SendDlgItemMessageW(s_recDialog, IDC_CHK_SHIFT, BM_SETCHECK, BST_CHECKED, 0);
+                }
+            }
+
+            PostMessageW(s_recDialog, WM_APP + 10, (WPARAM)s_recTarget, (LPARAM)vk);
+            if (s_recHook) {
+                UnhookWindowsHookEx(s_recHook);
+                s_recHook = nullptr;
+            }
+            s_recTarget = REC_NONE;
+            return 1;
+        }
+    }
+    return CallNextHookEx(s_recHook, code, w, l);
+}
+
+static void StopRecording(HWND hDlg) {
+    if (s_recHook) {
+        UnhookWindowsHookEx(s_recHook);
+        s_recHook = nullptr;
+    }
+    s_recTarget = REC_NONE;
+    SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_KEY), (s_dlgMode == 1) ? L"🎯 录制触发键" : L"🎯 录制主键");
+    SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_CHORD), L"🎯 录制前导键");
+    SetWindowTextW(GetDlgItem(hDlg, IDC_LBL_STATUS), L"已取消录制。");
+}
+
+static void StartRecording(HWND hDlg, RecordingTarget target) {
+    StopRecording(hDlg);
+    s_recTarget = target;
+    s_recDialog = hDlg;
+
+    if (target == REC_MAIN_KEY) {
+        SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_KEY), L"⏳ 请按键(Esc取消)");
+    } else {
+        SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_CHORD), L"⏳ 请按键(Esc取消)");
+    }
+    SetWindowTextW(GetDlgItem(hDlg, IDC_LBL_STATUS), L"正在录制按键：请在键盘上按下目标按键（按 Esc 取消）...");
+
+    s_recHook = SetWindowsHookExW(WH_KEYBOARD_LL, RecordingHookProc, GetModuleHandleW(nullptr), 0);
+}
+
+static void UpdateHotkeyUIMode(HWND hDlg, int mode) {
+    int showMod = (mode == 0) ? SW_SHOW : SW_HIDE;
+    int showChord = (mode == 1) ? SW_SHOW : SW_HIDE;
+
+    ShowWindow(GetDlgItem(hDlg, IDC_LBL_MODIFIERS), showMod);
+    ShowWindow(GetDlgItem(hDlg, IDC_CHK_CTRL), showMod);
+    ShowWindow(GetDlgItem(hDlg, IDC_CHK_ALT), showMod);
+    ShowWindow(GetDlgItem(hDlg, IDC_CHK_SHIFT), showMod);
+
+    ShowWindow(GetDlgItem(hDlg, IDC_LBL_CHORD_KEY), showChord);
+    ShowWindow(GetDlgItem(hDlg, IDC_CB_CHORD_PRESET), showChord);
+    ShowWindow(GetDlgItem(hDlg, IDC_BTN_REC_CHORD), showChord);
+    ShowWindow(GetDlgItem(hDlg, IDC_LBL_CUR_CHORD), showChord);
+
+    HWND hMainLbl = GetDlgItem(hDlg, IDC_LBL_MAIN_KEY);
+    HWND hHintLbl = GetDlgItem(hDlg, IDC_LBL_HK_HINT);
+
+    if (mode == 0) {
+        SetWindowTextW(hMainLbl, L"主快捷键：");
+        SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_KEY), L"🎯 录制主键");
+        SetWindowTextW(hHintLbl, L"说明：可勾选 Ctrl/Alt/Shift 组合，客制化键盘推荐选 F13；点击【🎯 录制】可直接按键盘设置。");
+    } else {
+        SetWindowTextW(hMainLbl, L"触发键（按下）：");
+        SetWindowTextW(GetDlgItem(hDlg, IDC_BTN_REC_KEY), L"🎯 录制触发键");
+        SetWindowTextW(hHintLbl, L"说明：按住前导键再按触发键进行切换，触发键静默拦截；前导键保留原有光标移动/输入。");
+    }
 }
 
 static void UpdateComboDetails(HWND hwndDlg, int comboId, int infoId) {
@@ -623,6 +891,40 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
         return (LRESULT)GetSysColorBrush(COLOR_BTNFACE);
     }
 
+    case WM_APP + 10: {
+        RecordingTarget target = (RecordingTarget)w;
+        UINT vk = (UINT)l;
+        if (target == REC_MAIN_KEY) {
+            s_dlgKey = vk;
+            SetWindowTextW(GetDlgItem(h, IDC_LBL_CUR_KEY), FormatKeyDisplay(s_dlgKey).c_str());
+            SetWindowTextW(GetDlgItem(h, IDC_BTN_REC_KEY), (s_dlgMode == 1) ? L"🎯 录制触发键" : L"🎯 录制主键");
+            for (int i = 0; i < ARRAYSIZE(k_mainKeyPresets); i++) {
+                if (k_mainKeyPresets[i].vk == s_dlgKey) {
+                    SendDlgItemMessageW(h, IDC_CB_KEY_PRESET, CB_SETCURSEL, i, 0);
+                    break;
+                }
+            }
+            SetWindowTextW(GetDlgItem(h, IDC_LBL_STATUS), L"按键录制成功！");
+        } else if (target == REC_CHORD_KEY) {
+            s_dlgChordKey = vk;
+            SetWindowTextW(GetDlgItem(h, IDC_LBL_CUR_CHORD), FormatKeyDisplay(s_dlgChordKey).c_str());
+            SetWindowTextW(GetDlgItem(h, IDC_BTN_REC_CHORD), L"🎯 录制前导键");
+            for (int i = 0; i < ARRAYSIZE(k_chordKeyPresets); i++) {
+                if (k_chordKeyPresets[i].vk == s_dlgChordKey) {
+                    SendDlgItemMessageW(h, IDC_CB_CHORD_PRESET, CB_SETCURSEL, i, 0);
+                    break;
+                }
+            }
+            SetWindowTextW(GetDlgItem(h, IDC_LBL_STATUS), L"前导键录制成功！");
+        }
+        return 0;
+    }
+
+    case WM_APP + 11: {
+        StopRecording(h);
+        return 0;
+    }
+
     case WM_COMMAND: {
         int wmId = LOWORD(w);
         int wmEvent = HIWORD(w);
@@ -633,6 +935,46 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
         }
         if (wmId == IDC_CB_DEV2 && wmEvent == CBN_SELCHANGE) {
             UpdateComboDetails(h, IDC_CB_DEV2, IDC_INFO_DEV2);
+            return 0;
+        }
+        if (wmId == IDC_CB_HK_MODE && wmEvent == CBN_SELCHANGE) {
+            int sel = (int)SendDlgItemMessageW(h, IDC_CB_HK_MODE, CB_GETCURSEL, 0, 0);
+            if (sel >= 0) {
+                s_dlgMode = sel;
+                UpdateHotkeyUIMode(h, s_dlgMode);
+            }
+            return 0;
+        }
+        if (wmId == IDC_CB_KEY_PRESET && wmEvent == CBN_SELCHANGE) {
+            int sel = (int)SendDlgItemMessageW(h, IDC_CB_KEY_PRESET, CB_GETCURSEL, 0, 0);
+            if (sel >= 0 && sel < ARRAYSIZE(k_mainKeyPresets)) {
+                s_dlgKey = k_mainKeyPresets[sel].vk;
+                SetWindowTextW(GetDlgItem(h, IDC_LBL_CUR_KEY), FormatKeyDisplay(s_dlgKey).c_str());
+            }
+            return 0;
+        }
+        if (wmId == IDC_CB_CHORD_PRESET && wmEvent == CBN_SELCHANGE) {
+            int sel = (int)SendDlgItemMessageW(h, IDC_CB_CHORD_PRESET, CB_GETCURSEL, 0, 0);
+            if (sel >= 0 && sel < ARRAYSIZE(k_chordKeyPresets)) {
+                s_dlgChordKey = k_chordKeyPresets[sel].vk;
+                SetWindowTextW(GetDlgItem(h, IDC_LBL_CUR_CHORD), FormatKeyDisplay(s_dlgChordKey).c_str());
+            }
+            return 0;
+        }
+        if (wmId == IDC_BTN_REC_KEY) {
+            if (s_recTarget == REC_MAIN_KEY) {
+                StopRecording(h);
+            } else {
+                StartRecording(h, REC_MAIN_KEY);
+            }
+            return 0;
+        }
+        if (wmId == IDC_BTN_REC_CHORD) {
+            if (s_recTarget == REC_CHORD_KEY) {
+                StopRecording(h);
+            } else {
+                StartRecording(h, REC_CHORD_KEY);
+            }
             return 0;
         }
         if (wmId == IDC_BTN_REFRESH) {
@@ -672,6 +1014,29 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
                 return 0;
             }
 
+            UINT newKey = s_dlgKey;
+            UINT newChordKey = (s_dlgMode == 1) ? s_dlgChordKey : 0;
+            UINT newMods = MOD_NOREPEAT;
+
+            if (s_dlgMode == 0) {
+                if (IsDlgButtonChecked(h, IDC_CHK_CTRL) == BST_CHECKED) newMods |= MOD_CONTROL;
+                if (IsDlgButtonChecked(h, IDC_CHK_ALT) == BST_CHECKED) newMods |= MOD_ALT;
+                if (IsDlgButtonChecked(h, IDC_CHK_SHIFT) == BST_CHECKED) newMods |= MOD_SHIFT;
+                if (newKey < 1 || newKey > 254) {
+                    MessageBoxW(h, L"请选择或录制有效的主快捷键。", L"提示", MB_ICONWARNING);
+                    return 0;
+                }
+            } else {
+                if (newChordKey < 1 || newChordKey > 254 || newKey < 1 || newKey > 254) {
+                    MessageBoxW(h, L"双键模式必须分别设置有效的前导键与触发键。", L"提示", MB_ICONWARNING);
+                    return 0;
+                }
+                if (newChordKey == newKey) {
+                    MessageBoxW(h, L"前导键与触发键不能相同，请选择不同的按键。", L"提示", MB_ICONWARNING);
+                    return 0;
+                }
+            }
+
             const auto& d1 = s_dlgDevices[idx1];
             StringCchCopyW(targets[0].friendlyName, ARRAYSIZE(targets[0].friendlyName), d1.friendlyName);
             StringCchCopyW(targets[0].desc, ARRAYSIZE(targets[0].desc), d1.desc);
@@ -688,9 +1053,18 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
             currentActive[1] = d2;
             targetResolved[1] = true;
 
+            key = newKey;
+            mods = newMods;
+            chordKey = newChordKey;
+
             SaveConfig();
 
-            MessageBoxW(h, L"配置已保存！\n程序将在每次切换时根据友好名称与硬件描述动态匹配活跃端点，开关机后自动识别，无需手动修改 ID。", L"AudioSwitch", MB_ICONINFORMATION);
+            bool hotkeyOk = ApplyHotkey(listenerWindow);
+            if (!hotkeyOk) {
+                MessageBoxW(h, L"设备配置已保存，但新快捷键注册失败！\n可能被其他软件占用，请尝试更换其他按键组合。", L"警告", MB_ICONWARNING);
+            } else {
+                MessageBoxW(h, L"配置已保存并即时生效！\n设备动态识别已更新，快捷键已就绪。", L"AudioSwitch", MB_ICONINFORMATION);
+            }
             DestroyWindow(h);
             return 0;
         }
@@ -706,6 +1080,11 @@ static LRESULT CALLBACK SettingsWndProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
         return 0;
 
     case WM_DESTROY:
+        if (s_recHook) {
+            UnhookWindowsHookEx(s_recHook);
+            s_recHook = nullptr;
+        }
+        s_recTarget = REC_NONE;
         if (s_dlgFont) {
             DeleteObject(s_dlgFont);
             s_dlgFont = nullptr;
@@ -724,6 +1103,11 @@ static void ShowSettingsDialog(HWND parent) {
         return;
     }
 
+    s_dlgKey = key;
+    s_dlgMods = mods;
+    s_dlgChordKey = chordKey;
+    s_dlgMode = chordKey ? 1 : 0;
+
     WNDCLASSW swc = {};
     swc.lpfnWndProc = SettingsWndProc;
     swc.hInstance = GetModuleHandleW(nullptr);
@@ -740,8 +1124,8 @@ static void ShowSettingsDialog(HWND parent) {
     }
     auto Scale = [dpi](int v) -> int { return MulDiv(v, dpi, 96); };
 
-    int dlgW = Scale(560);
-    int dlgH = Scale(430);
+    int dlgW = Scale(580);
+    int dlgH = Scale(460);
     int screenW = GetSystemMetrics(SM_CXSCREEN);
     int screenH = GetSystemMetrics(SM_CYSCREEN);
     int posX = (screenW - dlgW) / 2;
@@ -750,7 +1134,7 @@ static void ShowSettingsDialog(HWND parent) {
     settingsWindow = CreateWindowExW(
         WS_EX_DLGMODALFRAME,
         settingsCls,
-        L"AudioSwitch - 音频设备与切换设置",
+        L"AudioSwitch - 音频设备与快捷键配置",
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
         posX, posY, dlgW, dlgH,
         parent, nullptr, GetModuleHandleW(nullptr), nullptr
@@ -768,80 +1152,182 @@ static void ShowSettingsDialog(HWND parent) {
     s_dlgFont = CreateFontIndirectW(&ncm.lfMessageFont);
 
     CreateWindowExW(0, L"STATIC",
-        L"请选择要双向切换的两个音频输出设备。\n程序将在后台按【友好名称】与【硬件描述】动态解析端点 ID，电脑重启、休眠或插拔后自动跟踪识别，无需手动修改 INI。",
+        L"选择要在快捷键下双向切换的两个音频输出设备及切换热键。\n系统按【友好名称】与【硬件描述】动态解析端点，开关机后自动识别，无需手动修改 INI。",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        Scale(20), Scale(12), Scale(505), Scale(42),
+        Scale(20), Scale(10), Scale(535), Scale(36),
         settingsWindow, (HMENU)IDC_LBL_BANNER, GetModuleHandleW(nullptr), nullptr);
 
+    // Device 1
     CreateWindowExW(0, L"STATIC", L"目标设备 1（例如显示器扬声器）：",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        Scale(20), Scale(64), Scale(380), Scale(18),
+        Scale(20), Scale(52), Scale(400), Scale(16),
         settingsWindow, (HMENU)IDC_LBL_DEV1, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST | WS_VSCROLL,
-        Scale(20), Scale(85), Scale(395), Scale(200),
+        Scale(20), Scale(70), Scale(415), Scale(200),
         settingsWindow, (HMENU)IDC_CB_DEV1, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"试切此设备",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(425), Scale(84), Scale(100), Scale(26),
+        Scale(445), Scale(69), Scale(110), Scale(25),
         settingsWindow, (HMENU)IDC_BTN_TEST1, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"STATIC", L"",
         WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP,
-        Scale(20), Scale(114), Scale(505), Scale(18),
+        Scale(20), Scale(97), Scale(535), Scale(16),
         settingsWindow, (HMENU)IDC_INFO_DEV1, GetModuleHandleW(nullptr), nullptr);
 
+    // Device 2
     CreateWindowExW(0, L"STATIC", L"目标设备 2（例如有线耳机）：",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        Scale(20), Scale(140), Scale(380), Scale(18),
+        Scale(20), Scale(118), Scale(400), Scale(16),
         settingsWindow, (HMENU)IDC_LBL_DEV2, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"COMBOBOX", L"",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST | WS_VSCROLL,
-        Scale(20), Scale(161), Scale(395), Scale(200),
+        Scale(20), Scale(136), Scale(415), Scale(200),
         settingsWindow, (HMENU)IDC_CB_DEV2, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"试切此设备",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(425), Scale(160), Scale(100), Scale(26),
+        Scale(445), Scale(135), Scale(110), Scale(25),
         settingsWindow, (HMENU)IDC_BTN_TEST2, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"STATIC", L"",
         WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP,
-        Scale(20), Scale(190), Scale(505), Scale(18),
+        Scale(20), Scale(163), Scale(535), Scale(16),
         settingsWindow, (HMENU)IDC_INFO_DEV2, GetModuleHandleW(nullptr), nullptr);
 
-    wchar_t hkText[256];
-    if (chordKey) {
-        StringCchPrintfW(hkText, ARRAYSIZE(hkText), L"当前切换快捷键：双键组合 (前导键 VK:%u + 主键 VK:%u)", chordKey, key);
-    } else {
-        StringCchPrintfW(hkText, ARRAYSIZE(hkText), L"当前切换快捷键：VK 键码 %u (默认 F13=124)", key);
-    }
-    CreateWindowExW(0, L"STATIC", hkText,
+    // Hotkey Group Header
+    CreateWindowExW(0, L"STATIC", L"── 快捷键设置 ──────────────────────────────────────────────────────────",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
-        Scale(20), Scale(222), Scale(505), Scale(20),
-        settingsWindow, (HMENU)IDC_LBL_HOTKEY, GetModuleHandleW(nullptr), nullptr);
+        Scale(20), Scale(186), Scale(535), Scale(16),
+        settingsWindow, (HMENU)IDC_LBL_HK_TITLE, GetModuleHandleW(nullptr), nullptr);
 
+    CreateWindowExW(0, L"STATIC", L"切换模式：",
+        WS_CHILD | WS_VISIBLE | SS_LEFT,
+        Scale(20), Scale(208), Scale(75), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_HK_MODE, GetModuleHandleW(nullptr), nullptr);
+
+    HWND hCbMode = CreateWindowExW(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST | WS_VSCROLL,
+        Scale(100), Scale(205), Scale(455), Scale(100),
+        settingsWindow, (HMENU)IDC_CB_HK_MODE, GetModuleHandleW(nullptr), nullptr);
+    SendMessageW(hCbMode, CB_ADDSTRING, 0, (LPARAM)L"单键 / 修饰键模式 (RegisterHotKey，推荐 F13 或 Ctrl/Alt 组合)");
+    SendMessageW(hCbMode, CB_ADDSTRING, 0, (LPARAM)L"双键组合模式 Chord (低级键盘钩子，按住前导键再按触发键，如 End+PgUp)");
+    SendMessageW(hCbMode, CB_SETCURSEL, s_dlgMode, 0);
+
+    // Row 1: Mode 0 (Modifiers)
+    CreateWindowExW(0, L"STATIC", L"修饰键：",
+        WS_CHILD | WS_VISIBLE | SS_LEFT,
+        Scale(20), Scale(236), Scale(65), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_MODIFIERS, GetModuleHandleW(nullptr), nullptr);
+
+    HWND hChkCtrl = CreateWindowExW(0, L"BUTTON", L"Ctrl",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+        Scale(90), Scale(234), Scale(65), Scale(20),
+        settingsWindow, (HMENU)IDC_CHK_CTRL, GetModuleHandleW(nullptr), nullptr);
+    if (s_dlgMods & MOD_CONTROL) SendMessageW(hChkCtrl, BM_SETCHECK, BST_CHECKED, 0);
+
+    HWND hChkAlt = CreateWindowExW(0, L"BUTTON", L"Alt",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+        Scale(160), Scale(234), Scale(65), Scale(20),
+        settingsWindow, (HMENU)IDC_CHK_ALT, GetModuleHandleW(nullptr), nullptr);
+    if (s_dlgMods & MOD_ALT) SendMessageW(hChkAlt, BM_SETCHECK, BST_CHECKED, 0);
+
+    HWND hChkShift = CreateWindowExW(0, L"BUTTON", L"Shift",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX,
+        Scale(230), Scale(234), Scale(65), Scale(20),
+        settingsWindow, (HMENU)IDC_CHK_SHIFT, GetModuleHandleW(nullptr), nullptr);
+    if (s_dlgMods & MOD_SHIFT) SendMessageW(hChkShift, BM_SETCHECK, BST_CHECKED, 0);
+
+    // Row 1: Mode 1 (Chord Key)
+    CreateWindowExW(0, L"STATIC", L"前导键（按住）：",
+        WS_CHILD | SS_LEFT,
+        Scale(20), Scale(236), Scale(115), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_CHORD_KEY, GetModuleHandleW(nullptr), nullptr);
+
+    HWND hCbChord = CreateWindowExW(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_TABSTOP | CBS_DROPDOWNLIST | WS_VSCROLL,
+        Scale(140), Scale(233), Scale(175), Scale(200),
+        settingsWindow, (HMENU)IDC_CB_CHORD_PRESET, GetModuleHandleW(nullptr), nullptr);
+    for (const auto& item : k_chordKeyPresets) {
+        SendMessageW(hCbChord, CB_ADDSTRING, 0, (LPARAM)item.name);
+    }
+    for (int i = 0; i < ARRAYSIZE(k_chordKeyPresets); i++) {
+        if (k_chordKeyPresets[i].vk == s_dlgChordKey) {
+            SendMessageW(hCbChord, CB_SETCURSEL, i, 0);
+            break;
+        }
+    }
+
+    CreateWindowExW(0, L"BUTTON", L"🎯 录制前导键",
+        WS_CHILD | WS_TABSTOP | BS_PUSHBUTTON,
+        Scale(325), Scale(232), Scale(105), Scale(25),
+        settingsWindow, (HMENU)IDC_BTN_REC_CHORD, GetModuleHandleW(nullptr), nullptr);
+
+    CreateWindowExW(0, L"STATIC", FormatKeyDisplay(s_dlgChordKey).c_str(),
+        WS_CHILD | SS_LEFTNOWORDWRAP,
+        Scale(440), Scale(236), Scale(120), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_CUR_CHORD, GetModuleHandleW(nullptr), nullptr);
+
+    // Row 2: Main Key (for both modes)
+    CreateWindowExW(0, L"STATIC", L"主快捷键：",
+        WS_CHILD | WS_VISIBLE | SS_LEFT,
+        Scale(20), Scale(268), Scale(115), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_MAIN_KEY, GetModuleHandleW(nullptr), nullptr);
+
+    HWND hCbKey = CreateWindowExW(0, L"COMBOBOX", L"",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | CBS_DROPDOWNLIST | WS_VSCROLL,
+        Scale(140), Scale(265), Scale(175), Scale(200),
+        settingsWindow, (HMENU)IDC_CB_KEY_PRESET, GetModuleHandleW(nullptr), nullptr);
+    for (const auto& item : k_mainKeyPresets) {
+        SendMessageW(hCbKey, CB_ADDSTRING, 0, (LPARAM)item.name);
+    }
+    for (int i = 0; i < ARRAYSIZE(k_mainKeyPresets); i++) {
+        if (k_mainKeyPresets[i].vk == s_dlgKey) {
+            SendMessageW(hCbKey, CB_SETCURSEL, i, 0);
+            break;
+        }
+    }
+
+    CreateWindowExW(0, L"BUTTON", L"🎯 录制按键",
+        WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+        Scale(325), Scale(264), Scale(105), Scale(25),
+        settingsWindow, (HMENU)IDC_BTN_REC_KEY, GetModuleHandleW(nullptr), nullptr);
+
+    CreateWindowExW(0, L"STATIC", FormatKeyDisplay(s_dlgKey).c_str(),
+        WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP,
+        Scale(440), Scale(268), Scale(120), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_CUR_KEY, GetModuleHandleW(nullptr), nullptr);
+
+    // Hint text
+    CreateWindowExW(0, L"STATIC", L"",
+        WS_CHILD | WS_VISIBLE | SS_LEFT,
+        Scale(20), Scale(300), Scale(535), Scale(18),
+        settingsWindow, (HMENU)IDC_LBL_HK_HINT, GetModuleHandleW(nullptr), nullptr);
+
+    // Status text
     CreateWindowExW(0, L"STATIC", L"就绪",
         WS_CHILD | WS_VISIBLE | SS_LEFTNOWORDWRAP,
-        Scale(20), Scale(250), Scale(505), Scale(20),
+        Scale(20), Scale(324), Scale(535), Scale(18),
         settingsWindow, (HMENU)IDC_LBL_STATUS, GetModuleHandleW(nullptr), nullptr);
 
+    // Bottom buttons
     CreateWindowExW(0, L"BUTTON", L"🔄 刷新设备列表",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(20), Scale(295), Scale(130), Scale(32),
+        Scale(20), Scale(355), Scale(130), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_REFRESH, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"💾 保存并生效",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
-        Scale(285), Scale(295), Scale(120), Scale(32),
+        Scale(305), Scale(355), Scale(125), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_SAVE, GetModuleHandleW(nullptr), nullptr);
 
     CreateWindowExW(0, L"BUTTON", L"取消",
         WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
-        Scale(415), Scale(295), Scale(110), Scale(32),
+        Scale(445), Scale(355), Scale(110), Scale(30),
         settingsWindow, (HMENU)IDC_BTN_CANCEL, GetModuleHandleW(nullptr), nullptr);
 
     if (s_dlgFont) {
@@ -851,6 +1337,7 @@ static void ShowSettingsDialog(HWND parent) {
         }, (LPARAM)s_dlgFont);
     }
 
+    UpdateHotkeyUIMode(settingsWindow, s_dlgMode);
     PopulateDeviceCombos(settingsWindow);
     ShowWindow(settingsWindow, SW_SHOW);
     UpdateWindow(settingsWindow);
@@ -896,7 +1383,7 @@ static LRESULT CALLBACK WindowProc(HWND h, UINT msg, WPARAM w, LPARAM l) {
 
             AppendMenuW(menu, MF_STRING, 1, toggleText);
             AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
-            AppendMenuW(menu, MF_STRING, 10, L"音频设备配置(&S)...");
+            AppendMenuW(menu, MF_STRING, 10, L"快捷键与设备设置(&S)...");
             AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
             AppendMenuW(menu, MF_STRING | (StartupEnabled() ? MF_CHECKED : 0), 3, L"开机自启（当前用户登录时）");
             AppendMenuW(menu, MF_STRING, 4, L"隐藏托盘图标（快捷键继续工作）");
@@ -951,7 +1438,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int) {
     StringCchPrintfW(iconPath, MAX_PATH, L"%sAudioSwitch.ico", base);
 
     int argc = 0;
-    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(),&argc);
     if (!argv) return 1;
     const wchar_t* arg = argc >= 2 ? argv[1] : L"";
     bool background = !wcscmp(arg, L"--background");
@@ -1002,11 +1489,9 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int) {
     HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     if (FAILED(hr)) return 1;
 
-    // 尝试解析或自动发现配置
     IMMDeviceEnumerator* eProbe = nullptr;
     if (SUCCEEDED(CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&eProbe)))) {
         auto devs = EnumActiveEndpoints(eProbe);
-        // 如果未配置任何目标，且当前存在 Dell 或 耳机，自动匹配默认目标
         if (!targets[0].friendlyName[0] && !targets[0].desc[0] && !targets[0].fallbackId[0]) {
             for (const auto& d : devs) {
                 if (ContainsNoCase(d.friendlyName, L"DELL") || ContainsNoCase(d.desc, L"DELL")) {
@@ -1066,15 +1551,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, LPWSTR, int) {
     HWND h = CreateWindowExW(WS_EX_TOOLWINDOW, cls, L"AudioSwitch", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, instance, nullptr);
 
     listenerWindow = h;
-    bool registered = false;
-    if (h) {
-        if (chordKey) {
-            keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, KeyboardProc, instance, 0);
-            registered = keyboardHook != nullptr;
-        } else {
-            registered = RegisterHotKey(h, 1, mods, key) != FALSE;
-        }
-    }
+    bool registered = ApplyHotkey(h);
 
     if (!registered) {
         MessageBoxW(nullptr, L"无法注册快捷键，可能被其他程序占用。", L"音频切换", MB_ICONERROR);
